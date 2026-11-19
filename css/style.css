@@ -1303,3 +1303,95 @@ Steiner i hele spillområdet og tydelig sol
         inset 0 0 20px white;
     animation: ringPulse 850ms ease-in-out infinite alternate;
 }
+
+
+/*
+========================================
+TROPISKE BONUSOBJEKTER OG HINDRINGER
+========================================
+*/
+
+.game-object {
+    position: absolute;
+    margin: 0;
+    z-index: 22;
+    pointer-events: none;
+    transform: none;
+}
+
+.shell-bonus,
+.hibiscus-bonus,
+.coconut {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    filter: drop-shadow(0 9px 8px rgba(0, 0, 0, 0.38));
+}
+
+.shell-bonus {
+    width: clamp(76px, 10vw, 118px);
+    height: clamp(76px, 10vw, 118px);
+    border: 6px solid #fff3b0;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff7c9 0%, #f4c85f 52%, #cf8e20 100%);
+    box-shadow: 0 0 18px white, 0 0 38px rgba(255, 202, 56, 0.95);
+    animation: tropicalFloat 900ms ease-in-out infinite alternate;
+}
+
+.shell-bonus::after {
+    content: "🐚";
+    font-size: clamp(48px, 7vw, 82px);
+}
+
+.hibiscus-bonus {
+    width: clamp(78px, 10vw, 120px);
+    height: clamp(78px, 10vw, 120px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,96,157,0.45) 55%, transparent 72%);
+    box-shadow: 0 0 28px rgba(255, 73, 151, 0.95);
+    animation: tropicalFloat 800ms ease-in-out infinite alternate-reverse;
+}
+
+.hibiscus-bonus::after {
+    content: "🌺";
+    font-size: clamp(56px, 8vw, 94px);
+}
+
+.coconut {
+    width: clamp(72px, 9vw, 112px);
+    height: clamp(72px, 9vw, 112px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #a96835 0 13%, #7f4523 46%, #3f2115 100%);
+    box-shadow: inset 9px 7px 10px rgba(255,255,255,0.16), 0 10px 14px rgba(0,0,0,0.5);
+    animation: coconutBob 780ms ease-in-out infinite alternate;
+}
+
+.coconut::before,
+.coconut::after {
+    content: "";
+    position: absolute;
+    top: 23%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #25140d;
+}
+
+.coconut::before {
+    left: 35%;
+}
+
+.coconut::after {
+    right: 35%;
+}
+
+@keyframes tropicalFloat {
+    from { scale: 0.94; rotate: -5deg; }
+    to { scale: 1.06; rotate: 5deg; }
+}
+
+@keyframes coconutBob {
+    from { translate: 0 -5px; rotate: -7deg; }
+    to { translate: 0 5px; rotate: 7deg; }
+}

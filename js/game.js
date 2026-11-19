@@ -144,7 +144,7 @@ const player = {
     width: 180,
     height: 220,
 
-    speed: 330,
+    speed: 390,
 
     rotation: 0
 };
@@ -786,6 +786,30 @@ waveArea.addEventListener(
 );
 
 
+waveArea.addEventListener(
+    "pointerup",
+    stopPointerSteering
+);
+
+waveArea.addEventListener(
+    "pointercancel",
+    stopPointerSteering
+);
+
+waveArea.addEventListener(
+    "pointerleave",
+    function (event) {
+        if (event.pointerType !== "mouse") {
+            stopPointerSteering();
+        }
+    }
+);
+
+function stopPointerSteering() {
+    pointerActive = false;
+}
+
+
 function setPointerTarget(event) {
     if (gameState !== "surfing") {
         return;
@@ -859,21 +883,20 @@ function createRandomObject() {
     let type;
 
     /*
-    Vennlig startbalanse:
-    35 % solmynter
-    20 % bølgeringer
+    35 % gullskjell
+    20 % hibiskusblomster
     25 % skumbølger
-    20 % steiner
+    20 % kokosnøtter
     */
 
     if (randomNumber < 0.35) {
-        type = "coin";
+        type = "shell";
     } else if (randomNumber < 0.55) {
-        type = "ring";
+        type = "flower";
     } else if (randomNumber < 0.80) {
         type = "wave";
     } else {
-        type = "rock";
+        type = "coconut";
     }
 
     createGameObject(type);
@@ -881,29 +904,26 @@ function createRandomObject() {
 
 function createGameObject(type) {
     const element = document.createElement("div");
-
     element.classList.add("game-object");
 
-    if (type === "coin") {
-        element.classList.add("sun-coin");
-    } else if (type === "ring") {
-        element.classList.add("wave-ring");
+    if (type === "shell") {
+        element.classList.add("shell-bonus");
+    } else if (type === "flower") {
+        element.classList.add("hibiscus-bonus");
     } else if (type === "wave") {
         element.classList.add("foam-wave");
     } else {
-        element.classList.add("rock");
+        element.classList.add("coconut");
     }
 
     objectLayer.appendChild(element);
 
     const objectWidth = element.offsetWidth;
     const objectHeight = element.offsetHeight;
-
-    /* Tilfeldig høyde i nesten hele spillområdet. */
     const topMargin = 20;
     const bottomMargin = 25;
 
-    const availableHeight = Math.max(
+    let availableHeight = Math.max(
         1,
         waveArea.clientHeight
         - objectHeight
@@ -911,25 +931,35 @@ function createGameObject(type) {
         - bottomMargin
     );
 
-    const y =
-        topMargin
-        + Math.random() * availableHeight;
+    let y = topMargin + Math.random() * availableHeight;
 
-    /* Objektet starter utenfor venstre kant. */
-    const x =
-        waveArea.clientWidth + 60;
+    /* Bølger og kokosnøtter holder seg i nedre 65 % av vannet. */
+    if (type === "wave" || type === "coconut") {
+        const lowerStart = waveArea.clientHeight * 0.35;
+        availableHeight = Math.max(
+            1,
+            waveArea.clientHeight
+            - objectHeight
+            - lowerStart
+            - bottomMargin
+        );
+        y = lowerStart + Math.random() * availableHeight;
+    }
 
-    /* Rolig start, gradvis litt raskere. */
+    /* Objektene kommer inn fra høyre. */
+    const x = waveArea.clientWidth + 60;
+
+    /* Tydelig progresjon uten brå start. */
     let speed = Math.min(
-        340,
-        120
-        + gameTime * 2.2
+        360,
+        135
+        + gameTime * 2.25
         + score * 0.08
     );
 
-    /* Bonusobjekter får mer tid til å samles. */
-    if (type === "coin" || type === "ring") {
-        speed *= 0.78;
+    /* Bonusobjektene er litt enklere å samle. */
+    if (type === "shell" || type === "flower") {
+        speed *= 0.80;
     }
 
     const gameObject = {
@@ -1008,27 +1038,27 @@ function checkAllCollisions() {
             }
 
 
-            if (gameObject.type === "coin") {
+            if (gameObject.type === "shell") {
                 collectObject(
                     gameObject,
                     10,
-                    "Solmynt! +10"
+                    "Gullskjell! +10"
                 );
             }
 
 
-            if (gameObject.type === "ring") {
+            if (gameObject.type === "flower") {
                 collectObject(
                     gameObject,
                     25,
-                    "Bølgering! +25"
+                    "Hibiskus! +25"
                 );
             }
 
 
             if (
                 gameObject.type === "wave"
-                || gameObject.type === "rock"
+                || gameObject.type === "coconut"
             ) {
                 /*
                 Hopp beskytter mot lave
@@ -1237,7 +1267,7 @@ function removeOldObjects() {
             /* Unngått hindring gir fem poeng. */
             if (
                 gameObject.type === "wave"
-                || gameObject.type === "rock"
+                || gameObject.type === "coconut"
             ) {
                 score += 5;
                 updateInterface();
@@ -1329,7 +1359,7 @@ function endGame() {
 
     if (score < 100) {
         gameOverComment.textContent =
-            "En god start. Prøv å samle flere solmynter!";
+            "En god start. Prøv å samle flere gullskjell!";
     } else if (score < 300) {
         gameOverComment.textContent =
             "Flott surfing! Bølgene begynner å sitte.";
@@ -1402,6 +1432,32 @@ function resetGame() {
         "Velg en surfer!";
 }
 
+
+/*
+========================================
+SLIPP ALLE KONTROLLER
+========================================
+*/
+
+function resetControls() {
+    keys.left = false;
+    keys.right = false;
+    keys.up = false;
+    keys.down = false;
+    pointerActive = false;
+
+    document.querySelectorAll(".control-button")
+        .forEach(function (button) {
+            button.classList.remove("active");
+        });
+}
+
+window.addEventListener("blur", resetControls);
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        resetControls();
+    }
+});
 
 /*
 ========================================
