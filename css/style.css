@@ -1592,3 +1592,41 @@ størrelse som haien.
         rotate: 3deg;
     }
 }
+
+
+/*
+========================================
+UTEN HOPPKNAPP
+Spillet styres ved å bevege surferen.
+========================================
+*/
+
+#jumpButton {
+    display: none !important;
+}
+
+#surfControls {
+    justify-content: center;
+}
+
+
+/*
+========================================
+MINDRE HAI OG FULL SPILLFLATE
+JavaScript plasserer nå alle objekter tilfeldig
+innenfor hele waveArea. Denne regelen gjør haien
+mindre og gir mer plass til unnamanøver.
+========================================
+*/
+
+.shark-obstacle {
+    width: clamp(115px, 16vw, 205px);
+    height: clamp(72px, 10vw, 128px);
+}
+
+@media (max-width: 600px) {
+    .shark-obstacle {
+        width: clamp(95px, 28vw, 145px);
+        height: clamp(62px, 18vw, 95px);
+    }
+}

@@ -50,9 +50,6 @@ const surfLivesElement =
 const actionMessage =
     document.getElementById("actionMessage");
 
-const jumpButton =
-    document.getElementById("jumpButton");
-
 const leftButton =
     document.getElementById("leftButton");
 
@@ -159,6 +156,104 @@ updateSurferScoreLabels();
 
 /*
 ========================================
+LYDEFFEKTER UTEN LYDFILER
+Web Audio lager korte arkadelyder direkte.
+========================================
+*/
+
+let audioContext = null;
+
+function getAudioContext() {
+    if (!audioContext) {
+        const AudioContextClass =
+            window.AudioContext
+            || window.webkitAudioContext;
+
+        if (!AudioContextClass) {
+            return null;
+        }
+
+        audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    return audioContext;
+}
+
+function playTone(
+    frequency,
+    duration,
+    type = "square",
+    volume = 0.08,
+    delay = 0
+) {
+    const context = getAudioContext();
+
+    if (!context) {
+        return;
+    }
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const startTime = context.currentTime + delay;
+    const endTime = startTime + duration;
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        startTime
+    );
+
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime + 0.015
+    );
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        endTime
+    );
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+
+    oscillator.start(startTime);
+    oscillator.stop(endTime + 0.02);
+}
+
+function playShellSound() {
+    playTone(780, 0.10, "square", 0.055);
+    playTone(1080, 0.12, "square", 0.045, 0.08);
+}
+
+function playFlowerSound() {
+    playTone(620, 0.09, "sine", 0.075);
+    playTone(930, 0.09, "sine", 0.075, 0.07);
+    playTone(1240, 0.12, "sine", 0.065, 0.14);
+}
+
+function playSharkHitSound() {
+    playTone(145, 0.28, "sawtooth", 0.13);
+    playTone(92, 0.34, "square", 0.09, 0.10);
+}
+
+function playSurferHitSound() {
+    playTone(360, 0.12, "square", 0.10);
+    playTone(240, 0.16, "square", 0.10, 0.10);
+    playTone(170, 0.20, "sawtooth", 0.09, 0.20);
+}
+
+function playGameOverSound() {
+    playTone(420, 0.18, "square", 0.08);
+    playTone(280, 0.22, "square", 0.08, 0.17);
+    playTone(145, 0.35, "sawtooth", 0.10, 0.38);
+}
+
+/*
+========================================
 SPILLDATA
 ========================================
 */
@@ -234,6 +329,9 @@ startButton.addEventListener(
 
 
 function startIntro() {
+    /* Nettleseren tillater lyd etter et brukerklikk. */
+    getAudioContext();
+
     if (gameState !== "start") {
         return;
     }
@@ -902,11 +1000,6 @@ HOPP
 ========================================
 */
 
-jumpButton.addEventListener(
-    "click",
-    jump
-);
-
 
 function jump() {
     if (
@@ -1024,18 +1117,6 @@ function createGameObject(type) {
 
     let y = topMargin + Math.random() * availableHeight;
 
-    /* Haier og andre surfere holder seg i nedre 65 % av vannet. */
-    if (type === "wave" || type === "otherSurfer") {
-        const lowerStart = waveArea.clientHeight * 0.35;
-        availableHeight = Math.max(
-            1,
-            waveArea.clientHeight
-            - objectHeight
-            - lowerStart
-            - bottomMargin
-        );
-        y = lowerStart + Math.random() * availableHeight;
-    }
 
     /* Objektene kommer inn fra høyre. */
     const x = waveArea.clientWidth + 60;
@@ -1248,6 +1329,12 @@ function collectObject(
     points,
     message
 ) {
+    if (gameObject.type === "shell") {
+        playShellSound();
+    } else if (gameObject.type === "flower") {
+        playFlowerSound();
+    }
+
     gameObject.collected = true;
 
     gameObject.element.remove();
@@ -1316,6 +1403,12 @@ TREFF
 */
 
 function hitObstacle(gameObject, hitMessage = "Au! Ett liv mindre") {
+    if (gameObject.type === "wave") {
+        playSharkHitSound();
+    } else if (gameObject.type === "otherSurfer") {
+        playSurferHitSound();
+    }
+
     if (
         gameObject.collected
         || !canBeHit
@@ -1452,6 +1545,7 @@ GAME OVER
 
 function endGame() {
     gameState = "gameOver";
+    playGameOverSound();
 
     clearInterval(spawnTimer);
 
