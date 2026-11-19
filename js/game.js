@@ -885,7 +885,7 @@ function createRandomObject() {
     /*
     35 % gullskjell
     20 % hibiskusblomster
-    25 % skumbølger
+    25 % haier
     20 % kokosnøtter
     */
 
@@ -911,7 +911,7 @@ function createGameObject(type) {
     } else if (type === "flower") {
         element.classList.add("hibiscus-bonus");
     } else if (type === "wave") {
-        element.classList.add("foam-wave");
+        element.classList.add("shark-obstacle");
     } else {
         element.classList.add("coconut");
     }
@@ -933,7 +933,7 @@ function createGameObject(type) {
 
     let y = topMargin + Math.random() * availableHeight;
 
-    /* Bølger og kokosnøtter holder seg i nedre 65 % av vannet. */
+    /* Haier og kokosnøtter holder seg i nedre 65 % av vannet. */
     if (type === "wave" || type === "coconut") {
         const lowerStart = waveArea.clientHeight * 0.35;
         availableHeight = Math.max(

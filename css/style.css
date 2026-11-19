@@ -1395,3 +1395,63 @@ TROPISKE BONUSOBJEKTER OG HINDRINGER
     from { translate: 0 -5px; rotate: -7deg; }
     to { translate: 0 5px; rotate: 7deg; }
 }
+
+
+/*
+========================================
+HAI SOM HINDRING
+Den interne objekttypen heter fortsatt wave i JavaScript,
+men vises som hai for å beholde stabil spillogikk.
+========================================
+*/
+
+.shark-obstacle {
+    position: absolute;
+    width: clamp(120px, 17vw, 210px);
+    height: clamp(72px, 10vw, 118px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    filter:
+        drop-shadow(0 10px 8px rgba(0, 27, 46, 0.55));
+    animation:
+        sharkSwim 720ms ease-in-out infinite alternate;
+}
+
+.shark-obstacle::after {
+    content: "🦈";
+    font-size: clamp(88px, 14vw, 170px);
+    transform: scaleX(-1);
+}
+
+.shark-obstacle::before {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 4%;
+    bottom: 4%;
+    height: 24%;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255, 255, 255, 0.78),
+            rgba(69, 211, 239, 0.48) 55%,
+            transparent 72%
+        );
+    filter: blur(2px);
+    z-index: -1;
+}
+
+@keyframes sharkSwim {
+    from {
+        translate: 0 -4px;
+        rotate: -2deg;
+    }
+
+    to {
+        translate: 0 6px;
+        rotate: 2deg;
+    }
+}
