@@ -1592,3 +1592,19 @@ størrelse som haien.
         rotate: 3deg;
     }
 }
+
+
+/*
+========================================
+UTEN HOPPKNAPP
+Spillet styres ved å bevege surferen.
+========================================
+*/
+
+#jumpButton {
+    display: none !important;
+}
+
+#surfControls {
+    justify-content: center;
+}
