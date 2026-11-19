@@ -1,11 +1,12 @@
 /*
 ========================================
-HTML-ELEMENTER
+HTML-ELEMENT
 ========================================
 */
 
 const startButton =
     document.getElementById("startButton");
+
 
 const startScreen =
     document.getElementById("startScreen");
