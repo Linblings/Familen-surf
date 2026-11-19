@@ -189,6 +189,7 @@ let lives = 3;
 let combo = 0;
 
 let gameTime = 0;
+let difficultyLevel = 1;
 
 let animationFrame = null;
 let spawnTimer = null;
@@ -377,6 +378,7 @@ function startSurfing() {
     lives = 3;
     combo = 0;
     gameTime = 0;
+    difficultyLevel = 1;
 
     gameObjects = [];
 
@@ -470,6 +472,7 @@ function gameLoop(currentTime) {
 
     gameTime += deltaTime;
 
+    updateDifficultyMessage();
     updatePlayer(deltaTime);
 
     updateObjects(deltaTime);
@@ -949,6 +952,33 @@ LAG SPILLOBJEKTER
 ========================================
 */
 
+function updateDifficultyMessage() {
+    let newLevel = 1;
+
+    if (gameTime >= 45) {
+        newLevel = 4;
+    } else if (gameTime >= 30) {
+        newLevel = 3;
+    } else if (gameTime >= 15) {
+        newLevel = 2;
+    }
+
+    if (newLevel === difficultyLevel) {
+        return;
+    }
+
+    difficultyLevel = newLevel;
+
+    const messages = {
+        2: "Raskere bølger!",
+        3: "Hai-fart!",
+        4: "Tropisk storm!"
+    };
+
+    showActionMessage(messages[difficultyLevel]);
+}
+
+
 function createRandomObject() {
     if (gameState !== "surfing") {
         return;
@@ -1025,16 +1055,35 @@ function createGameObject(type) {
     const x = waveArea.clientWidth + 60;
 
     /* Tydelig progresjon uten brå start. */
+    /*
+    Farten øker tydelig i trinn.
+
+    0–14 sekunder: 260 + gradvis økning
+    15–29 sekunder: 360 + gradvis økning
+    30–44 sekunder: 470 + gradvis økning
+    45+ sekunder: 590 + gradvis økning
+    */
+
+    let baseSpeed = 260;
+
+    if (gameTime >= 45) {
+        baseSpeed = 590;
+    } else if (gameTime >= 30) {
+        baseSpeed = 470;
+    } else if (gameTime >= 15) {
+        baseSpeed = 360;
+    }
+
     let speed = Math.min(
-        520,
-        190
-        + gameTime * 3.4
-        + score * 0.12
+        820,
+        baseSpeed
+        + gameTime * 2.4
+        + score * 0.11
     );
 
     /* Bonusobjektene er litt enklere å samle. */
     if (type === "shell" || type === "flower") {
-        speed *= 0.80;
+        speed *= 0.88;
     }
 
     const gameObject = {

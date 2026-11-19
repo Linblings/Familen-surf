@@ -1521,3 +1521,33 @@ NY HAI-GRAFIKK
         font-size: clamp(8px, 2.5vw, 12px);
     }
 }
+
+
+/*
+========================================
+MINDRE SURFER I SELVE SPILLET
+Figurene på valgskjermen beholder størrelsen.
+========================================
+*/
+
+#player {
+    width: clamp(115px, 17vw, 235px);
+    height: clamp(110px, 28vh, 265px);
+}
+
+@media (max-width: 600px) {
+    #player {
+        width: clamp(95px, 29vw, 155px);
+        height: clamp(100px, 27vh, 190px);
+    }
+}
+
+@media
+(max-height: 550px)
+and
+(orientation: landscape) {
+    #player {
+        width: 125px;
+        height: 155px;
+    }
+}
