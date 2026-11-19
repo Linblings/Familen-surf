@@ -916,19 +916,20 @@ function createGameObject(type) {
         + Math.random() * availableHeight;
 
     /* Objektet starter utenfor venstre kant. */
-    const x = -objectWidth - 50;
+    const x =
+        waveArea.clientWidth + 60;
 
     /* Rolig start, gradvis litt raskere. */
     let speed = Math.min(
-        285,
-        95
-        + gameTime * 1.25
-        + score * 0.07
+        340,
+        120
+        + gameTime * 2.2
+        + score * 0.08
     );
 
     /* Bonusobjekter får mer tid til å samles. */
     if (type === "coin" || type === "ring") {
-        speed *= 0.72;
+        speed *= 0.78;
     }
 
     const gameObject = {
@@ -955,7 +956,7 @@ FLYTT SPILLOBJEKTER
 
 function updateObjects(deltaTime) {
     gameObjects.forEach(function (gameObject) {
-        gameObject.x +=
+        gameObject.x -=
             gameObject.speed * deltaTime;
 
         drawGameObject(gameObject);
@@ -1228,7 +1229,8 @@ function removeOldObjects() {
         /* Objektet har passert høyre kant. */
         if (
             gameObject.x
-            > waveArea.clientWidth + 150
+            + gameObject.width
+            < -150
         ) {
             gameObject.element.remove();
 
