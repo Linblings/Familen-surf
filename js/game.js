@@ -101,78 +101,61 @@ const surfingImages = {
 
 /*
 ========================================
-LOKALE REKORDER PER SURFER
+POENG PER SURFER I DENNE SPILLØKTEN
+Poengene lagres bare mens siden er åpen.
 ========================================
 */
 
-const highscoreKey = "familienSurfHighscores";
+const surferScores = {
+    "Jørgen": 0,
+    "Elisabeth": 0,
+    "Filip": 0,
+    "Jens": 0
+};
 
-let surferHighscores = loadHighscores();
-
-function loadHighscores() {
-    try {
-        const savedScores =
-            localStorage.getItem(highscoreKey);
-
-        if (!savedScores) {
-            return {};
-        }
-
-        return JSON.parse(savedScores);
-    } catch (error) {
-        return {};
-    }
-}
-
-function saveHighscores() {
-    localStorage.setItem(
-        highscoreKey,
-        JSON.stringify(surferHighscores)
-    );
-}
-
-function updateSurferHighscoreLabels() {
+function updateSurferScoreLabels() {
     surfers.forEach(function (surfer) {
         const surferName = surfer.dataset.name;
-        let recordLabel =
+
+        let scoreLabel =
             surfer.querySelector(".surfer-best");
 
-        if (!recordLabel) {
-            recordLabel =
+        if (!scoreLabel) {
+            scoreLabel =
                 document.createElement("small");
 
-            recordLabel.className = "surfer-best";
-            surfer.appendChild(recordLabel);
+            /*
+            Vi beholder CSS-klassen surfer-best,
+            men teksten viser nå rundepoeng.
+            */
+            scoreLabel.className = "surfer-best";
+            surfer.appendChild(scoreLabel);
         }
 
-        const bestScore =
-            surferHighscores[surferName] || 0;
-
-        recordLabel.textContent =
-            "Rekord: " + bestScore;
+        scoreLabel.textContent =
+            "Poeng: " + surferScores[surferName];
     });
 }
 
-function saveSelectedSurferHighscore() {
+function resetSelectedSurferScore() {
     if (!selectedSurfer) {
-        return false;
+        return;
     }
 
-    const previousBest =
-        surferHighscores[selectedSurfer] || 0;
-
-    if (score <= previousBest) {
-        return false;
-    }
-
-    surferHighscores[selectedSurfer] = score;
-    saveHighscores();
-    updateSurferHighscoreLabels();
-
-    return true;
+    surferScores[selectedSurfer] = 0;
+    updateSurferScoreLabels();
 }
 
-updateSurferHighscoreLabels();
+function saveSelectedSurferScore() {
+    if (!selectedSurfer) {
+        return;
+    }
+
+    surferScores[selectedSurfer] = score;
+    updateSurferScoreLabels();
+}
+
+updateSurferScoreLabels();
 
 /*
 ========================================
@@ -326,6 +309,9 @@ function chooseSurfer(event) {
 
     selectedSurfer =
         clickedSurfer.dataset.name;
+
+    /* Ny runde for valgt surfer starter på null. */
+    resetSelectedSurferScore();
 
     surfers.forEach(function (surfer) {
         surfer.classList.remove(
@@ -1473,8 +1459,7 @@ function endGame() {
         animationFrame
     );
 
-    const isNewRecord =
-        saveSelectedSurferHighscore();
+    saveSelectedSurferScore();
 
     finalScore.textContent =
         selectedSurfer +
@@ -1482,12 +1467,7 @@ function endGame() {
         score +
         " poeng.";
 
-    if (isNewRecord) {
-        gameOverComment.textContent =
-            "Ny rekord for "
-            + selectedSurfer
-            + "!";
-    } else if (score < 100) {
+    if (score < 100) {
         gameOverComment.textContent =
             "En god start. Prøv å samle flere gullskjell!";
     } else if (score < 300) {
