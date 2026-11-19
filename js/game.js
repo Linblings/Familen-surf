@@ -1117,18 +1117,6 @@ function createGameObject(type) {
 
     let y = topMargin + Math.random() * availableHeight;
 
-    /* Haier og andre surfere holder seg i nedre 65 % av vannet. */
-    if (type === "wave" || type === "otherSurfer") {
-        const lowerStart = waveArea.clientHeight * 0.35;
-        availableHeight = Math.max(
-            1,
-            waveArea.clientHeight
-            - objectHeight
-            - lowerStart
-            - bottomMargin
-        );
-        y = lowerStart + Math.random() * availableHeight;
-    }
 
     /* Objektene kommer inn fra høyre. */
     const x = waveArea.clientWidth + 60;
