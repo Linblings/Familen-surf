@@ -1455,3 +1455,69 @@ men vises som hai for å beholde stabil spillogikk.
         rotate: 2deg;
     }
 }
+
+
+/*
+========================================
+NY HAI-GRAFIKK
+========================================
+*/
+
+.shark-obstacle {
+    position: absolute;
+    width: clamp(155px, 22vw, 280px);
+    height: clamp(95px, 14vw, 175px);
+    background-image: url("../assets/images/shark.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter:
+        drop-shadow(0 12px 9px rgba(0, 20, 35, 0.62));
+    animation:
+        sharkCharge 590ms ease-in-out infinite alternate;
+}
+
+.shark-obstacle::before,
+.shark-obstacle::after {
+    content: none;
+}
+
+@keyframes sharkCharge {
+    from {
+        translate: 0 -4px;
+        rotate: -2deg;
+        scale: 0.98;
+    }
+
+    to {
+        translate: -9px 6px;
+        rotate: 2deg;
+        scale: 1.04;
+    }
+}
+
+/* Rekord under hver surfer på valgskjermen. */
+.surfer-best {
+    display: block;
+    min-width: 82%;
+    margin-top: 4px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: white;
+    background: rgba(3, 37, 65, 0.76);
+    font-size: clamp(10px, 1.5vw, 15px);
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.28);
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .surfer-best {
+        min-width: 96%;
+        margin-top: 2px;
+        padding: 3px 1px;
+        font-size: clamp(8px, 2.5vw, 12px);
+    }
+}

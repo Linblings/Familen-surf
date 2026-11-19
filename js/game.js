@@ -101,6 +101,81 @@ const surfingImages = {
 
 /*
 ========================================
+LOKALE REKORDER PER SURFER
+========================================
+*/
+
+const highscoreKey = "familienSurfHighscores";
+
+let surferHighscores = loadHighscores();
+
+function loadHighscores() {
+    try {
+        const savedScores =
+            localStorage.getItem(highscoreKey);
+
+        if (!savedScores) {
+            return {};
+        }
+
+        return JSON.parse(savedScores);
+    } catch (error) {
+        return {};
+    }
+}
+
+function saveHighscores() {
+    localStorage.setItem(
+        highscoreKey,
+        JSON.stringify(surferHighscores)
+    );
+}
+
+function updateSurferHighscoreLabels() {
+    surfers.forEach(function (surfer) {
+        const surferName = surfer.dataset.name;
+        let recordLabel =
+            surfer.querySelector(".surfer-best");
+
+        if (!recordLabel) {
+            recordLabel =
+                document.createElement("small");
+
+            recordLabel.className = "surfer-best";
+            surfer.appendChild(recordLabel);
+        }
+
+        const bestScore =
+            surferHighscores[surferName] || 0;
+
+        recordLabel.textContent =
+            "Rekord: " + bestScore;
+    });
+}
+
+function saveSelectedSurferHighscore() {
+    if (!selectedSurfer) {
+        return false;
+    }
+
+    const previousBest =
+        surferHighscores[selectedSurfer] || 0;
+
+    if (score <= previousBest) {
+        return false;
+    }
+
+    surferHighscores[selectedSurfer] = score;
+    saveHighscores();
+    updateSurferHighscoreLabels();
+
+    return true;
+}
+
+updateSurferHighscoreLabels();
+
+/*
+========================================
 SPILLDATA
 ========================================
 */
@@ -951,10 +1026,10 @@ function createGameObject(type) {
 
     /* Tydelig progresjon uten brå start. */
     let speed = Math.min(
-        360,
-        135
-        + gameTime * 2.25
-        + score * 0.08
+        520,
+        190
+        + gameTime * 3.4
+        + score * 0.12
     );
 
     /* Bonusobjektene er litt enklere å samle. */
@@ -1351,18 +1426,26 @@ function endGame() {
         animationFrame
     );
 
+    const isNewRecord =
+        saveSelectedSurferHighscore();
+
     finalScore.textContent =
         selectedSurfer +
         " fikk " +
         score +
         " poeng.";
 
-    if (score < 100) {
+    if (isNewRecord) {
+        gameOverComment.textContent =
+            "Ny rekord for "
+            + selectedSurfer
+            + "!";
+    } else if (score < 100) {
         gameOverComment.textContent =
             "En god start. Prøv å samle flere gullskjell!";
     } else if (score < 300) {
         gameOverComment.textContent =
-            "Flott surfing! Bølgene begynner å sitte.";
+            "Flott surfing! Haiene begynner å få problemer.";
     } else {
         gameOverComment.textContent =
             "Fantastisk! Familien har fått en surfemester.";
