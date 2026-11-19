@@ -101,6 +101,64 @@ const surfingImages = {
 
 /*
 ========================================
+POENG PER SURFER I DENNE SPILLØKTEN
+Poengene lagres bare mens siden er åpen.
+========================================
+*/
+
+const surferScores = {
+    "Jørgen": 0,
+    "Elisabeth": 0,
+    "Filip": 0,
+    "Jens": 0
+};
+
+function updateSurferScoreLabels() {
+    surfers.forEach(function (surfer) {
+        const surferName = surfer.dataset.name;
+
+        let scoreLabel =
+            surfer.querySelector(".surfer-best");
+
+        if (!scoreLabel) {
+            scoreLabel =
+                document.createElement("small");
+
+            /*
+            Vi beholder CSS-klassen surfer-best,
+            men teksten viser nå rundepoeng.
+            */
+            scoreLabel.className = "surfer-best";
+            surfer.appendChild(scoreLabel);
+        }
+
+        scoreLabel.textContent =
+            "Poeng: " + surferScores[surferName];
+    });
+}
+
+function resetSelectedSurferScore() {
+    if (!selectedSurfer) {
+        return;
+    }
+
+    surferScores[selectedSurfer] = 0;
+    updateSurferScoreLabels();
+}
+
+function saveSelectedSurferScore() {
+    if (!selectedSurfer) {
+        return;
+    }
+
+    surferScores[selectedSurfer] = score;
+    updateSurferScoreLabels();
+}
+
+updateSurferScoreLabels();
+
+/*
+========================================
 SPILLDATA
 ========================================
 */
@@ -114,6 +172,7 @@ let lives = 3;
 let combo = 0;
 
 let gameTime = 0;
+let difficultyLevel = 1;
 
 let animationFrame = null;
 let spawnTimer = null;
@@ -144,7 +203,7 @@ const player = {
     width: 180,
     height: 220,
 
-    speed: 330,
+    speed: 390,
 
     rotation: 0
 };
@@ -251,6 +310,9 @@ function chooseSurfer(event) {
     selectedSurfer =
         clickedSurfer.dataset.name;
 
+    /* Ny runde for valgt surfer starter på null. */
+    resetSelectedSurferScore();
+
     surfers.forEach(function (surfer) {
         surfer.classList.remove(
             "selected",
@@ -302,6 +364,7 @@ function startSurfing() {
     lives = 3;
     combo = 0;
     gameTime = 0;
+    difficultyLevel = 1;
 
     gameObjects = [];
 
@@ -333,7 +396,7 @@ function startSurfing() {
 
         spawnTimer = setInterval(
             createRandomObject,
-            1450
+            2500
         );
 
         lastFrameTime =
@@ -395,6 +458,7 @@ function gameLoop(currentTime) {
 
     gameTime += deltaTime;
 
+    updateDifficultyMessage();
     updatePlayer(deltaTime);
 
     updateObjects(deltaTime);
@@ -786,6 +850,30 @@ waveArea.addEventListener(
 );
 
 
+waveArea.addEventListener(
+    "pointerup",
+    stopPointerSteering
+);
+
+waveArea.addEventListener(
+    "pointercancel",
+    stopPointerSteering
+);
+
+waveArea.addEventListener(
+    "pointerleave",
+    function (event) {
+        if (event.pointerType !== "mouse") {
+            stopPointerSteering();
+        }
+    }
+);
+
+function stopPointerSteering() {
+    pointerActive = false;
+}
+
+
 function setPointerTarget(event) {
     if (gameState !== "surfing") {
         return;
@@ -850,134 +938,155 @@ LAG SPILLOBJEKTER
 ========================================
 */
 
+function updateDifficultyMessage() {
+    let newLevel = 1;
+
+    if (gameTime >= 45) {
+        newLevel = 4;
+    } else if (gameTime >= 30) {
+        newLevel = 3;
+    } else if (gameTime >= 15) {
+        newLevel = 2;
+    }
+
+    if (newLevel === difficultyLevel) {
+        return;
+    }
+
+    difficultyLevel = newLevel;
+
+    const messages = {
+        2: "Raskere bølger!",
+        3: "Hai-fart!",
+        4: "Tropisk storm!"
+    };
+
+    showActionMessage(messages[difficultyLevel]);
+}
+
+
 function createRandomObject() {
     if (gameState !== "surfing") {
         return;
     }
 
-    const randomNumber =
-        Math.random();
-
+    const randomNumber = Math.random();
     let type;
 
-    if (randomNumber < 0.38) {
-        type = "coin";
-    } else if (randomNumber < 0.60) {
-        type = "ring";
-    } else if (randomNumber < 0.82) {
+    /*
+    35 % gullskjell
+    20 % hibiskusblomster
+    25 % haier
+    20 % andre surfere
+    */
+
+    if (randomNumber < 0.35) {
+        type = "shell";
+    } else if (randomNumber < 0.55) {
+        type = "flower";
+    } else if (randomNumber < 0.80) {
         type = "wave";
     } else {
-        type = "rock";
+        type = "otherSurfer";
     }
 
     createGameObject(type);
 }
 
-
 function createGameObject(type) {
-    const element =
-        document.createElement("div");
+    const element = document.createElement("div");
+    element.classList.add("game-object");
 
-    element.classList.add(
-        "game-object"
-    );
-
-    if (type === "coin") {
-        element.classList.add(
-            "sun-coin"
-        );
-    }
-
-    if (type === "ring") {
-        element.classList.add(
-            "wave-ring"
-        );
-    }
-
-    if (type === "wave") {
-        element.classList.add(
-            "foam-wave"
-        );
-    }
-
-    if (type === "rock") {
-        element.classList.add(
-            "rock"
-        );
+    if (type === "shell") {
+        element.classList.add("shell-bonus");
+    } else if (type === "flower") {
+        element.classList.add("hibiscus-bonus");
+    } else if (type === "wave") {
+        element.classList.add("shark-obstacle");
+    } else {
+        element.classList.add("other-surfer-obstacle");
     }
 
     objectLayer.appendChild(element);
 
+    const objectWidth = element.offsetWidth;
+    const objectHeight = element.offsetHeight;
+    const topMargin = 20;
+    const bottomMargin = 25;
 
-    const objectWidth =
-        element.offsetWidth;
+    let availableHeight = Math.max(
+        1,
+        waveArea.clientHeight
+        - objectHeight
+        - topMargin
+        - bottomMargin
+    );
 
-    const objectHeight =
-        element.offsetHeight;
+    let y = topMargin + Math.random() * availableHeight;
 
-    const maximumY =
-        Math.max(
-            10,
+    /* Haier og andre surfere holder seg i nedre 65 % av vannet. */
+    if (type === "wave" || type === "otherSurfer") {
+        const lowerStart = waveArea.clientHeight * 0.35;
+        availableHeight = Math.max(
+            1,
             waveArea.clientHeight
             - objectHeight
-            - 15
+            - lowerStart
+            - bottomMargin
         );
-
-    let y =
-        15 + Math.random()
-        * (maximumY - 15);
-
-
-    /*
-    Hindringer plasseres gjerne
-    nærmere vannoverflaten.
-    */
-
-    if (
-        type === "wave"
-        || type === "rock"
-    ) {
-        y =
-            waveArea.clientHeight
-            - objectHeight
-            - 18;
+        y = lowerStart + Math.random() * availableHeight;
     }
 
+    /* Objektene kommer inn fra høyre. */
+    const x = waveArea.clientWidth + 60;
 
-    const speed =
-        Math.min(
-            520,
-            230
-            + gameTime * 4
-            + score * 0.45
-        );
+    /* Tydelig progresjon uten brå start. */
+    /*
+    Farten øker tydelig i trinn.
 
+    0–14 sekunder: 260 + gradvis økning
+    15–29 sekunder: 360 + gradvis økning
+    30–44 sekunder: 470 + gradvis økning
+    45+ sekunder: 590 + gradvis økning
+    */
+
+    let baseSpeed = 260;
+
+    if (gameTime >= 45) {
+        baseSpeed = 590;
+    } else if (gameTime >= 30) {
+        baseSpeed = 470;
+    } else if (gameTime >= 15) {
+        baseSpeed = 360;
+    }
+
+    let speed = Math.min(
+        820,
+        baseSpeed
+        + gameTime * 2.4
+        + score * 0.11
+    );
+
+    /* Bonusobjektene er litt enklere å samle. */
+    if (type === "shell" || type === "flower") {
+        speed *= 0.88;
+    }
 
     const gameObject = {
         element: element,
-
         type: type,
-
-        x:
-            waveArea.clientWidth
-            + 120,
-
+        x: x,
         y: y,
-
         width: objectWidth,
         height: objectHeight,
-
         speed: speed,
-
         collected: false,
         passed: false
     };
 
     gameObjects.push(gameObject);
-
     drawGameObject(gameObject);
 }
-
 
 /*
 ========================================
@@ -986,25 +1095,25 @@ FLYTT SPILLOBJEKTER
 */
 
 function updateObjects(deltaTime) {
-    gameObjects.forEach(
-        function (gameObject) {
-            gameObject.x -=
-                gameObject.speed
-                * deltaTime;
+    gameObjects.forEach(function (gameObject) {
+        gameObject.x -=
+            gameObject.speed * deltaTime;
 
-            drawGameObject(gameObject);
-        }
-    );
+        drawGameObject(gameObject);
+    });
 }
 
-
 function drawGameObject(gameObject) {
-    gameObject.element.style.transform =
-        "translate(" +
-        gameObject.x +
-        "px, " +
-        gameObject.y +
-        "px)";
+    /*
+    left og top styrer plasseringen.
+    Da kan CSS animere sol og ring uten
+    å overskrive objektets posisjon.
+    */
+    gameObject.element.style.left =
+        gameObject.x + "px";
+
+    gameObject.element.style.top =
+        gameObject.y + "px";
 }
 
 
@@ -1039,27 +1148,27 @@ function checkAllCollisions() {
             }
 
 
-            if (gameObject.type === "coin") {
+            if (gameObject.type === "shell") {
                 collectObject(
                     gameObject,
                     10,
-                    "Solmynt! +10"
+                    "Gullskjell! +10"
                 );
             }
 
 
-            if (gameObject.type === "ring") {
+            if (gameObject.type === "flower") {
                 collectObject(
                     gameObject,
                     25,
-                    "Bølgering! +25"
+                    "Hibiskus! +25"
                 );
             }
 
 
             if (
                 gameObject.type === "wave"
-                || gameObject.type === "rock"
+                || gameObject.type === "otherSurfer"
             ) {
                 /*
                 Hopp beskytter mot lave
@@ -1206,7 +1315,7 @@ TREFF
 ========================================
 */
 
-function hitObstacle(gameObject) {
+function hitObstacle(gameObject, hitMessage = "Au! Ett liv mindre") {
     if (
         gameObject.collected
         || !canBeHit
@@ -1225,9 +1334,7 @@ function hitObstacle(gameObject) {
 
     playerElement.classList.add("hit");
 
-    showActionMessage(
-        "Au! Ett liv mindre"
-    );
+    showActionMessage(hitMessage);
 
     updateInterface();
 
@@ -1252,46 +1359,33 @@ FJERN GAMLE OBJEKTER
 */
 
 function removeOldObjects() {
-    gameObjects =
-        gameObjects.filter(
-            function (gameObject) {
+    gameObjects = gameObjects.filter(function (gameObject) {
+        if (gameObject.collected) {
+            return false;
+        }
 
-                if (gameObject.collected) {
-                    return false;
-                }
+        /* Objektet har passert høyre kant. */
+        if (
+            gameObject.x
+            + gameObject.width
+            < -150
+        ) {
+            gameObject.element.remove();
 
-                if (
-                    gameObject.x
-                    + gameObject.width
-                    < -150
-                ) {
-                    gameObject.element.remove();
-
-                    /*
-                    Hindringer som passeres
-                    uten treff gir litt poeng.
-                    */
-
-                    if (
-                        gameObject.type
-                        === "wave"
-
-                        ||
-
-                        gameObject.type
-                        === "rock"
-                    ) {
-                        score += 5;
-
-                        updateInterface();
-                    }
-
-                    return false;
-                }
-
-                return true;
+            /* Unngått hindring gir fem poeng. */
+            if (
+                gameObject.type === "wave"
+                || gameObject.type === "otherSurfer"
+            ) {
+                score += 5;
+                updateInterface();
             }
-        );
+
+            return false;
+        }
+
+        return true;
+    });
 }
 
 
@@ -1365,6 +1459,8 @@ function endGame() {
         animationFrame
     );
 
+    saveSelectedSurferScore();
+
     finalScore.textContent =
         selectedSurfer +
         " fikk " +
@@ -1373,10 +1469,10 @@ function endGame() {
 
     if (score < 100) {
         gameOverComment.textContent =
-            "En god start. Prøv å samle flere solmynter!";
+            "En god start. Prøv å samle flere gullskjell!";
     } else if (score < 300) {
         gameOverComment.textContent =
-            "Flott surfing! Bølgene begynner å sitte.";
+            "Flott surfing! Haiene begynner å få problemer.";
     } else {
         gameOverComment.textContent =
             "Fantastisk! Familien har fått en surfemester.";
@@ -1446,6 +1542,32 @@ function resetGame() {
         "Velg en surfer!";
 }
 
+
+/*
+========================================
+SLIPP ALLE KONTROLLER
+========================================
+*/
+
+function resetControls() {
+    keys.left = false;
+    keys.right = false;
+    keys.up = false;
+    keys.down = false;
+    pointerActive = false;
+
+    document.querySelectorAll(".control-button")
+        .forEach(function (button) {
+            button.classList.remove("active");
+        });
+}
+
+window.addEventListener("blur", resetControls);
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        resetControls();
+    }
+});
 
 /*
 ========================================
