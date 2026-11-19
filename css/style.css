@@ -1551,3 +1551,44 @@ and
         height: 155px;
     }
 }
+
+
+/*
+========================================
+ANNEN SURFER SOM HINDRING
+Erstatter kokosnøtten og har omtrent samme
+størrelse som haien.
+========================================
+*/
+
+.other-surfer-obstacle {
+    position: absolute;
+    width: clamp(145px, 21vw, 270px);
+    height: clamp(105px, 16vw, 195px);
+    background-image:
+        url("../assets/images/other-surfer.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter:
+        drop-shadow(0 12px 9px rgba(0, 20, 35, 0.55));
+    animation:
+        otherSurferRide 720ms ease-in-out infinite alternate;
+}
+
+.other-surfer-obstacle::before,
+.other-surfer-obstacle::after {
+    content: none;
+}
+
+@keyframes otherSurferRide {
+    from {
+        translate: 0 -5px;
+        rotate: -3deg;
+    }
+
+    to {
+        translate: -7px 6px;
+        rotate: 3deg;
+    }
+}

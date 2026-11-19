@@ -991,7 +991,7 @@ function createRandomObject() {
     35 % gullskjell
     20 % hibiskusblomster
     25 % haier
-    20 % kokosnøtter
+    20 % andre surfere
     */
 
     if (randomNumber < 0.35) {
@@ -1001,7 +1001,7 @@ function createRandomObject() {
     } else if (randomNumber < 0.80) {
         type = "wave";
     } else {
-        type = "coconut";
+        type = "otherSurfer";
     }
 
     createGameObject(type);
@@ -1018,7 +1018,7 @@ function createGameObject(type) {
     } else if (type === "wave") {
         element.classList.add("shark-obstacle");
     } else {
-        element.classList.add("coconut");
+        element.classList.add("other-surfer-obstacle");
     }
 
     objectLayer.appendChild(element);
@@ -1038,8 +1038,8 @@ function createGameObject(type) {
 
     let y = topMargin + Math.random() * availableHeight;
 
-    /* Haier og kokosnøtter holder seg i nedre 65 % av vannet. */
-    if (type === "wave" || type === "coconut") {
+    /* Haier og andre surfere holder seg i nedre 65 % av vannet. */
+    if (type === "wave" || type === "otherSurfer") {
         const lowerStart = waveArea.clientHeight * 0.35;
         availableHeight = Math.max(
             1,
@@ -1182,7 +1182,7 @@ function checkAllCollisions() {
 
             if (
                 gameObject.type === "wave"
-                || gameObject.type === "coconut"
+                || gameObject.type === "otherSurfer"
             ) {
                 /*
                 Hopp beskytter mot lave
@@ -1329,7 +1329,7 @@ TREFF
 ========================================
 */
 
-function hitObstacle(gameObject) {
+function hitObstacle(gameObject, hitMessage = "Au! Ett liv mindre") {
     if (
         gameObject.collected
         || !canBeHit
@@ -1348,9 +1348,7 @@ function hitObstacle(gameObject) {
 
     playerElement.classList.add("hit");
 
-    showActionMessage(
-        "Au! Ett liv mindre"
-    );
+    showActionMessage(hitMessage);
 
     updateInterface();
 
@@ -1391,7 +1389,7 @@ function removeOldObjects() {
             /* Unngått hindring gir fem poeng. */
             if (
                 gameObject.type === "wave"
-                || gameObject.type === "coconut"
+                || gameObject.type === "otherSurfer"
             ) {
                 score += 5;
                 updateInterface();
