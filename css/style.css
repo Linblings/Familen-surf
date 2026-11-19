@@ -1,0 +1,1181 @@
+/*
+========================================
+GRUNNINNSTILLINGER
+========================================
+*/
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background-color: #082f49;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    overflow: hidden;
+    user-select: none;
+}
+
+button {
+    font: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#game {
+    width: 100%;
+    min-height: 100vh;
+}
+
+
+/*
+========================================
+FELLES BAKGRUNN
+========================================
+*/
+
+#beachScene {
+    position: relative;
+
+    width: 100%;
+    min-height: 100vh;
+
+    overflow: hidden;
+
+    background-color: #36b9df;
+
+    background-image:
+        linear-gradient(
+            to bottom,
+            rgba(0, 60, 100, 0.03),
+            rgba(0, 60, 100, 0.14)
+        ),
+        url("../assets/images/beach-background.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/*
+========================================
+STARTSKJERM
+========================================
+*/
+
+#startScreen {
+    position: absolute;
+
+    left: 50%;
+    top: 43%;
+
+    width: min(90%, 650px);
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    padding: clamp(24px, 5vw, 45px);
+
+    text-align: center;
+
+    color: white;
+    background-color: rgba(3, 37, 65, 0.84);
+
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    border-radius: 25px;
+
+    box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.35);
+
+    backdrop-filter: blur(6px);
+
+    z-index: 40;
+
+    opacity: 1;
+
+    transition:
+        opacity 600ms ease,
+        transform 600ms ease;
+}
+
+#startScreen h1 {
+    margin: 0;
+
+    color: #ffe66d;
+
+    font-size: clamp(42px, 10vw, 82px);
+    line-height: 0.95;
+
+    text-shadow:
+        0 5px 0 rgba(0, 0, 0, 0.25);
+}
+
+#startScreen p {
+    margin: 25px 0;
+
+    font-size: clamp(18px, 4vw, 27px);
+}
+
+#startScreen.hidden-away {
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.85);
+
+    pointer-events: none;
+}
+
+
+/*
+========================================
+STANDARDKNAPPER
+========================================
+*/
+
+#startButton,
+#jumpButton,
+#playAgainButton {
+    min-height: 54px;
+
+    padding: 14px 30px;
+
+    border: 0;
+    border-radius: 999px;
+
+    color: white;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+#startButton,
+#playAgainButton {
+    background-color: #ff7b54;
+
+    box-shadow:
+        0 7px 0 #b63f29;
+}
+
+#startButton:hover,
+#playAgainButton:hover {
+    background-color: #ff946f;
+}
+
+#startButton:active,
+#playAgainButton:active {
+    transform: translateY(4px);
+
+    box-shadow:
+        0 3px 0 #b63f29;
+}
+
+
+/*
+========================================
+FELLES BESKJED
+========================================
+*/
+
+#gameMessage {
+    position: absolute;
+
+    left: 50%;
+    top: 4%;
+
+    width: min(92%, 900px);
+
+    transform: translateX(-50%);
+
+    margin: 0;
+    padding: 10px 18px;
+
+    color: white;
+
+    text-align: center;
+    font-size: clamp(22px, 4.5vw, 40px);
+    font-weight: bold;
+
+    text-shadow:
+        0 3px 6px rgba(0, 0, 0, 0.85);
+
+    z-index: 35;
+
+    pointer-events: none;
+}
+
+
+/*
+========================================
+FIGURVALG
+========================================
+*/
+
+#selectionScene {
+    position: absolute;
+    inset: 0;
+
+    z-index: 10;
+}
+
+#familyArea {
+    position: absolute;
+
+    left: 2%;
+    right: 2%;
+    bottom: 1%;
+
+    height: 58%;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    gap: clamp(2px, 1.5vw, 22px);
+
+    pointer-events: none;
+}
+
+.surfer {
+    position: relative;
+
+    width: min(23%, 260px);
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transform:
+        translateX(-130vw)
+        scale(0.88);
+
+    transition:
+        transform 1000ms
+        cubic-bezier(0.22, 0.8, 0.25, 1),
+
+        opacity 450ms ease,
+
+        filter 250ms ease;
+
+    pointer-events: none;
+
+    touch-action: manipulation;
+}
+
+.surfer.enter {
+    opacity: 1;
+
+    transform:
+        translateX(0)
+        scale(1);
+}
+
+#familyArea.ready {
+    pointer-events: auto;
+}
+
+#familyArea.ready .surfer {
+    pointer-events: auto;
+}
+
+.surfer img {
+    display: block;
+
+    width: 100%;
+    height: calc(100% - 48px);
+
+    object-fit: contain;
+    object-position: center bottom;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(
+            0 12px 9px
+            rgba(0, 0, 0, 0.35)
+        );
+}
+
+.surfer span {
+    min-width: 90%;
+
+    margin-top: 2px;
+    padding: 8px 12px;
+
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    border-radius: 999px;
+
+    color: white;
+
+    text-align: center;
+    font-size: clamp(13px, 2vw, 22px);
+    font-weight: bold;
+
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.25);
+
+    pointer-events: none;
+}
+
+.surfer-jorgen span {
+    background-color: #0879bd;
+}
+
+.surfer-elisabeth span {
+    background-color: #d9467a;
+}
+
+.surfer-filip span {
+    background-color: #d9432c;
+}
+
+.surfer-jens span {
+    background-color: #dda512;
+}
+
+#familyArea.ready .surfer:hover,
+#familyArea.ready .surfer:focus-visible {
+    filter: brightness(1.12);
+
+    transform:
+        translateY(-12px)
+        scale(1.04);
+
+    outline: none;
+}
+
+.surfer.selected {
+    filter:
+        brightness(1.15)
+        drop-shadow(
+            0 0 18px
+            rgba(255, 230, 109, 0.95)
+        );
+
+    transform:
+        translateY(-16px)
+        scale(1.07);
+}
+
+.surfer.not-selected {
+    opacity: 0.3;
+
+    filter:
+        grayscale(0.8)
+        brightness(0.75);
+
+    transform:
+        scale(0.95);
+}
+
+
+/*
+========================================
+SURFESCENE
+========================================
+*/
+
+#surfScene {
+    position: absolute;
+    inset: 0;
+
+    z-index: 15;
+
+    overflow: hidden;
+
+    background-image:
+        linear-gradient(
+            to bottom,
+            rgba(0, 90, 150, 0.02),
+            rgba(0, 55, 90, 0.18)
+        ),
+        url("../assets/images/beach-background.png");
+
+    background-size: cover;
+    background-position: center 42%;
+    background-repeat: no-repeat;
+}
+
+
+/*
+========================================
+POENG, SERIE OG LIV
+========================================
+*/
+
+#surfInfo {
+    position: absolute;
+
+    top: 2%;
+    left: 50%;
+
+    width: min(95%, 780px);
+
+    transform: translateX(-50%);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 9px 18px;
+
+    border: 2px solid rgba(255, 255, 255, 0.82);
+    border-radius: 18px;
+
+    color: white;
+    background-color: rgba(3, 37, 65, 0.75);
+
+    font-size: clamp(15px, 3vw, 23px);
+    font-weight: bold;
+
+    z-index: 50;
+
+    backdrop-filter: blur(4px);
+}
+
+#surfInfo p {
+    margin: 0;
+}
+
+
+/*
+========================================
+SPILLOMRÅDE
+========================================
+*/
+
+#waveArea {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 10%;
+    bottom: 14%;
+
+    overflow: hidden;
+
+    touch-action: none;
+}
+
+
+/*
+========================================
+SPILLER
+========================================
+*/
+
+#player {
+    position: absolute;
+
+    left: 80px;
+    top: 200px;
+
+    width: clamp(140px, 22vw, 300px);
+    height: clamp(130px, 35vh, 330px);
+
+    z-index: 25;
+
+    transform-origin: center bottom;
+
+    pointer-events: none;
+
+    will-change:
+        left,
+        top,
+        transform;
+}
+
+#activeSurfer {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+    object-position: center bottom;
+
+    z-index: 3;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(
+            0 14px 10px
+            rgba(0, 0, 0, 0.38)
+        );
+}
+
+#player.jumping {
+    animation:
+        jumpArc 650ms
+        cubic-bezier(0.2, 0.7, 0.35, 1);
+}
+
+@keyframes jumpArc {
+    0% {
+        margin-top: 0;
+    }
+
+    45% {
+        margin-top: -120px;
+    }
+
+    100% {
+        margin-top: 0;
+    }
+}
+
+#player.hit {
+    animation:
+        hitFlash 180ms
+        linear
+        5;
+}
+
+@keyframes hitFlash {
+    0% {
+        opacity: 1;
+        filter: none;
+    }
+
+    50% {
+        opacity: 0.35;
+        filter: brightness(2);
+    }
+
+    100% {
+        opacity: 1;
+        filter: none;
+    }
+}
+
+
+/*
+========================================
+VANNSPRUT BAK BRETTET
+========================================
+*/
+
+#waterTrail {
+    position: absolute;
+
+    left: 5%;
+    bottom: 4%;
+
+    width: 45%;
+    height: 20%;
+
+    z-index: 1;
+
+    opacity: 0.85;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255, 255, 255, 0.95),
+            rgba(71, 211, 239, 0.65) 55%,
+            transparent 72%
+        );
+
+    filter: blur(2px);
+
+    animation:
+        waterPulse 650ms
+        ease-in-out
+        infinite alternate;
+}
+
+@keyframes waterPulse {
+    from {
+        transform:
+            scaleX(0.78)
+            translateX(-8px);
+
+        opacity: 0.55;
+    }
+
+    to {
+        transform:
+            scaleX(1.1)
+            translateX(-15px);
+
+        opacity: 0.95;
+    }
+}
+
+
+/*
+========================================
+SPILLOBJEKTER
+========================================
+*/
+
+#objectLayer {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+}
+
+
+/*
+Felles regler
+*/
+
+.game-object {
+    position: absolute;
+
+    z-index: 15;
+
+    will-change: transform;
+}
+
+
+/*
+Skumtopp
+*/
+
+.foam-wave {
+    width: clamp(95px, 14vw, 165px);
+    height: clamp(65px, 11vw, 115px);
+
+    border-radius:
+        75% 35% 20% 20%;
+
+    background:
+        radial-gradient(
+            circle at 25% 20%,
+            white 0 10%,
+            transparent 11%
+        ),
+        radial-gradient(
+            circle at 55% 17%,
+            white 0 13%,
+            transparent 14%
+        ),
+        linear-gradient(
+            145deg,
+            #eaffff 0%,
+            #76e2f4 30%,
+            #08a7cb 60%,
+            #016d99 100%
+        );
+
+    box-shadow:
+        inset 0 11px 0
+        rgba(255, 255, 255, 0.55),
+
+        0 11px 17px
+        rgba(0, 56, 90, 0.35);
+}
+
+
+/*
+Stein
+*/
+
+.rock {
+    width: clamp(65px, 9vw, 105px);
+    height: clamp(45px, 7vw, 80px);
+
+    border-radius:
+        55% 45% 28% 32%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #50535c,
+            #181b22
+        );
+
+    box-shadow:
+        inset 10px 8px 12px
+        rgba(255, 255, 255, 0.12),
+
+        0 10px 12px
+        rgba(0, 0, 0, 0.38);
+}
+
+
+/*
+Solmynt
+*/
+
+.sun-coin {
+    width: clamp(42px, 6vw, 68px);
+    aspect-ratio: 1;
+
+    border: 5px solid #fff6a3;
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff9ab 0%,
+            #ffd43b 42%,
+            #ee9d00 100%
+        );
+
+    box-shadow:
+        0 0 18px
+        rgba(255, 229, 90, 0.95),
+
+        inset 0 0 12px
+        rgba(255, 255, 255, 0.8);
+
+    animation:
+        coinSpin 900ms
+        linear
+        infinite;
+}
+
+@keyframes coinSpin {
+    from {
+        rotate: 0deg;
+    }
+
+    to {
+        rotate: 360deg;
+    }
+}
+
+
+/*
+Bølgering
+*/
+
+.wave-ring {
+    width: clamp(85px, 12vw, 140px);
+    aspect-ratio: 1;
+
+    border:
+        clamp(9px, 1.5vw, 17px)
+        solid #6ff1ff;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 15px
+        rgba(69, 231, 255, 0.95),
+
+        inset 0 0 14px
+        rgba(255, 255, 255, 0.8);
+
+    background:
+        rgba(0, 184, 220, 0.08);
+
+    animation:
+        ringPulse 800ms
+        ease-in-out
+        infinite alternate;
+}
+
+@keyframes ringPulse {
+    from {
+        scale: 0.93;
+    }
+
+    to {
+        scale: 1.05;
+    }
+}
+
+
+/*
+========================================
+HANDLINGSBESKJED
+========================================
+*/
+
+#actionMessage {
+    position: absolute;
+
+    left: 50%;
+    top: 15%;
+
+    transform: translateX(-50%);
+
+    color: #fff8a5;
+
+    font-size: clamp(24px, 5vw, 44px);
+    font-weight: bold;
+
+    text-shadow:
+        0 4px 7px
+        rgba(0, 0, 0, 0.75);
+
+    opacity: 0;
+
+    z-index: 55;
+
+    pointer-events: none;
+}
+
+#actionMessage.show {
+    animation:
+        messagePop 750ms
+        ease-out;
+}
+
+@keyframes messagePop {
+    0% {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            scale(0.7);
+    }
+
+    30% {
+        opacity: 1;
+        transform:
+            translateX(-50%)
+            scale(1.1);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            translateY(-40px)
+            scale(1);
+    }
+}
+
+
+/*
+========================================
+KONTROLLER
+========================================
+*/
+
+#surfControls {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 1.5%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 35px;
+
+    z-index: 65;
+}
+
+#directionControls {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 52px);
+
+    gap: 5px;
+}
+
+.control-button {
+    width: 52px;
+    height: 52px;
+
+    padding: 0;
+
+    border: 2px solid white;
+    border-radius: 14px;
+
+    color: white;
+    background-color:
+        rgba(3, 71, 105, 0.82);
+
+    font-size: 23px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    touch-action: none;
+}
+
+.control-button:active,
+.control-button.active {
+    background-color: #18b9d0;
+
+    transform: scale(0.94);
+}
+
+#jumpButton {
+    min-width: 160px;
+
+    background-color: #f5b700;
+
+    box-shadow:
+        0 7px 0 #9d7000;
+}
+
+#jumpButton:hover {
+    background-color: #ffca28;
+}
+
+#jumpButton:active {
+    transform: translateY(4px);
+
+    box-shadow:
+        0 3px 0 #9d7000;
+}
+
+
+/*
+========================================
+GAME OVER
+========================================
+*/
+
+#gameOverScreen {
+    position: absolute;
+
+    left: 50%;
+    top: 46%;
+
+    width: min(90%, 580px);
+
+    transform:
+        translate(-50%, -50%);
+
+    padding: 30px;
+
+    text-align: center;
+
+    color: white;
+    background-color:
+        rgba(3, 37, 65, 0.92);
+
+    border: 3px solid white;
+    border-radius: 25px;
+
+    box-shadow:
+        0 18px 50px
+        rgba(0, 0, 0, 0.45);
+
+    z-index: 80;
+}
+
+#gameOverScreen h2 {
+    margin: 0 0 15px;
+
+    color: #ffe66d;
+
+    font-size:
+        clamp(40px, 8vw, 68px);
+}
+
+#gameOverScreen p {
+    font-size: 22px;
+}
+
+
+/*
+========================================
+MOBIL
+========================================
+*/
+
+@media (max-width: 600px) {
+
+    #startScreen {
+        top: 42%;
+
+        padding: 24px 18px;
+    }
+
+    #startButton,
+    #playAgainButton {
+        width: 100%;
+        max-width: 310px;
+    }
+
+    #gameMessage {
+        top: 2%;
+
+        font-size:
+            clamp(19px, 6vw, 29px);
+    }
+
+    #familyArea {
+        left: 0;
+        right: 0;
+        bottom: 2%;
+
+        height: 48%;
+
+        gap: 0;
+    }
+
+    .surfer {
+        width: 25%;
+    }
+
+    .surfer img {
+        height:
+            calc(100% - 37px);
+    }
+
+    .surfer span {
+        min-width: 96%;
+
+        padding: 5px 2px;
+
+        border-width: 1px;
+
+        font-size:
+            clamp(10px, 3vw, 15px);
+    }
+
+    #surfInfo {
+        top: 1%;
+
+        padding: 8px 9px;
+
+        font-size:
+            clamp(12px, 3.4vw, 17px);
+    }
+
+    #waveArea {
+        top: 9%;
+        bottom: 19%;
+    }
+
+    #player {
+        width: clamp(120px, 37vw, 190px);
+        height: clamp(120px, 34vh, 240px);
+    }
+
+    @keyframes jumpArc {
+        0% {
+            margin-top: 0;
+        }
+
+        45% {
+            margin-top: -85px;
+        }
+
+        100% {
+            margin-top: 0;
+        }
+    }
+
+    #surfControls {
+        bottom: 1%;
+
+        gap: 10px;
+    }
+
+    #directionControls {
+        grid-template-columns:
+            repeat(4, 43px);
+    }
+
+    .control-button {
+        width: 43px;
+        height: 48px;
+
+        font-size: 19px;
+    }
+
+    #jumpButton {
+        min-width: 105px;
+        min-height: 50px;
+
+        padding: 10px 14px;
+
+        font-size: 18px;
+    }
+}
+
+
+/*
+========================================
+LIGGENDE MOBIL
+========================================
+*/
+
+@media
+(max-height: 550px)
+and
+(orientation: landscape) {
+
+    #surfInfo {
+        width: 65%;
+
+        font-size: 14px;
+    }
+
+    #waveArea {
+        top: 11%;
+        bottom: 21%;
+    }
+
+    #player {
+        width: 150px;
+        height: 190px;
+    }
+
+    #surfControls {
+        justify-content: flex-end;
+
+        padding-right: 18px;
+    }
+}
+
+
+/*
+========================================
+REDUSERT BEVEGELSE
+========================================
+*/
+
+@media
+(prefers-reduced-motion: reduce) {
+
+    .surfer,
+    #startScreen {
+        transition-duration: 1ms;
+    }
+
+    #waterTrail,
+    .sun-coin,
+    .wave-ring {
+        animation-duration: 1ms;
+    }
+}

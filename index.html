@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Familien Surf</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main id="game">
+
+        <section id="beachScene">
+
+            <!-- STARTSKJERM -->
+
+            <section id="startScreen">
+                <h1>Familien Surf</h1>
+
+                <p>Et surfeeventyr på Hawaii</p>
+
+                <button
+                    id="startButton"
+                    type="button"
+                >
+                    Start spillet
+                </button>
+            </section>
+
+
+            <!-- FIGURVALG -->
+
+            <section
+                id="selectionScene"
+                aria-label="Velg en surfer"
+            >
+
+                <div id="familyArea">
+
+                    <button
+                        class="surfer surfer-jorgen"
+                        data-name="Jørgen"
+                        type="button"
+                    >
+                        <img
+                            src="assets/images/jorgen.png"
+                            alt="Jørgen med surfebrett"
+                        >
+
+                        <span>Jørgen</span>
+                    </button>
+
+
+                    <button
+                        class="surfer surfer-elisabeth"
+                        data-name="Elisabeth"
+                        type="button"
+                    >
+                        <img
+                            src="assets/images/elisabeth.png"
+                            alt="Elisabeth med surfebrett"
+                        >
+
+                        <span>Elisabeth</span>
+                    </button>
+
+
+                    <button
+                        class="surfer surfer-filip"
+                        data-name="Filip"
+                        type="button"
+                    >
+                        <img
+                            src="assets/images/filip.png"
+                            alt="Filip med surfebrett"
+                        >
+
+                        <span>Filip</span>
+                    </button>
+
+
+                    <button
+                        class="surfer surfer-jens"
+                        data-name="Jens"
+                        type="button"
+                    >
+                        <img
+                            src="assets/images/jens.png"
+                            alt="Jens med surfebrett"
+                        >
+
+                        <span>Jens</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- SURFESPILLET -->
+
+            <section
+                id="surfScene"
+                class="hidden"
+                aria-label="Surfespillet"
+            >
+
+                <div id="surfInfo">
+
+                    <p id="surfScore">
+                        Poeng: 0
+                    </p>
+
+                    <p id="comboDisplay">
+                        Serie: 0
+                    </p>
+
+                    <p id="surfLives">
+                        Liv: ❤️ ❤️ ❤️
+                    </p>
+
+                </div>
+
+
+                <div id="waveArea">
+
+                    <!-- Valgt figur plasseres her -->
+
+                    <div id="player">
+
+                        <img
+                            id="activeSurfer"
+                            src=""
+                            alt="Valgt surfer"
+                        >
+
+                        <div
+                            id="waterTrail"
+                            aria-hidden="true"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- Hindringer og bonuser -->
+
+                    <div
+                        id="objectLayer"
+                        aria-hidden="true"
+                    ></div>
+
+
+                    <!-- Kort beskjed under spillet -->
+
+                    <div
+                        id="actionMessage"
+                        aria-live="polite"
+                    ></div>
+
+                </div>
+
+
+                <!-- Mobilkontroller -->
+
+                <div id="surfControls">
+
+                    <div id="directionControls">
+
+                        <button
+                            id="leftButton"
+                            class="control-button"
+                            type="button"
+                            aria-label="Styr til venstre"
+                        >
+                            ◀
+                        </button>
+
+                        <button
+                            id="upButton"
+                            class="control-button"
+                            type="button"
+                            aria-label="Styr opp"
+                        >
+                            ▲
+                        </button>
+
+                        <button
+                            id="downButton"
+                            class="control-button"
+                            type="button"
+                            aria-label="Styr ned"
+                        >
+                            ▼
+                        </button>
+
+                        <button
+                            id="rightButton"
+                            class="control-button"
+                            type="button"
+                            aria-label="Styr til høyre"
+                        >
+                            ▶
+                        </button>
+
+                    </div>
+
+
+                    <button
+                        id="jumpButton"
+                        type="button"
+                    >
+                        Hopp
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- GAME OVER -->
+
+            <section
+                id="gameOverScreen"
+                class="hidden"
+            >
+                <h2>Game Over</h2>
+
+                <p id="finalScore">
+                    Du fikk 0 poeng.
+                </p>
+
+                <p id="gameOverComment"></p>
+
+                <button
+                    id="playAgainButton"
+                    type="button"
+                >
+                    Velg surfer på nytt
+                </button>
+            </section>
+
+
+            <!-- FELLES BESKJED -->
+
+            <p
+                id="gameMessage"
+                aria-live="polite"
+            ></p>
+
+        </section>
+
+    </main>
+
+    <script src="js/game.js"></script>
+
+</body>
+</html>
