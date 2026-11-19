@@ -1179,3 +1179,127 @@ REDUSERT BEVEGELSE
         animation-duration: 1ms;
     }
 }
+
+
+/*
+========================================
+FORBEDREDE SPILLOBJEKTER
+Steiner i hele spillområdet og tydelig sol
+========================================
+*/
+
+.game-object {
+    position: absolute;
+    margin: 0;
+    z-index: 22;
+    pointer-events: none;
+    transform: none;
+}
+
+.sun-coin {
+    position: absolute;
+    width: clamp(82px, 11vw, 125px);
+    height: clamp(82px, 11vw, 125px);
+    aspect-ratio: 1;
+    border: 8px solid #fffde0;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle at 34% 28%,
+            #ffffff 0 7%,
+            #fff9a6 8% 23%,
+            #ffd632 24% 58%,
+            #ff9d00 59% 100%
+        );
+    box-shadow:
+        0 0 12px #ffffff,
+        0 0 30px #fff34e,
+        0 0 58px rgba(255, 170, 0, 0.98),
+        inset 0 0 17px rgba(255, 255, 255, 0.95);
+    animation: sunPulse 900ms ease-in-out infinite alternate;
+}
+
+.sun-coin::after {
+    content: "☀";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #fffde1;
+    font-size: clamp(44px, 7vw, 78px);
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: 0 3px 5px rgba(168, 76, 0, 0.65);
+}
+
+@keyframes sunPulse {
+    from {
+        scale: 0.94;
+        rotate: -5deg;
+    }
+    to {
+        scale: 1.07;
+        rotate: 5deg;
+    }
+}
+
+.rock {
+    position: absolute;
+    width: clamp(86px, 11vw, 138px);
+    height: clamp(62px, 8vw, 102px);
+    border: 4px solid rgba(255, 255, 255, 0.25);
+    border-radius: 58% 42% 31% 28%;
+    background:
+        radial-gradient(
+            ellipse at 30% 25%,
+            rgba(255, 255, 255, 0.25),
+            transparent 32%
+        ),
+        linear-gradient(
+            145deg,
+            #9aa0aa 0%,
+            #555b66 42%,
+            #242832 72%,
+            #11141a 100%
+        );
+    box-shadow:
+        inset 14px 10px 12px rgba(255, 255, 255, 0.20),
+        0 10px 16px rgba(0, 0, 0, 0.55);
+}
+
+.foam-wave {
+    position: absolute;
+    width: clamp(125px, 18vw, 220px);
+    height: clamp(85px, 13vw, 145px);
+    border-radius: 75% 38% 22% 22%;
+    background:
+        radial-gradient(circle at 18% 19%, white 0 11%, transparent 12%),
+        radial-gradient(circle at 47% 13%, white 0 14%, transparent 15%),
+        radial-gradient(circle at 76% 22%, white 0 10%, transparent 11%),
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #b9f8ff 23%,
+            #50d9ef 48%,
+            #0797c0 72%,
+            #00577e 100%
+        );
+    box-shadow:
+        inset 0 14px 0 rgba(255, 255, 255, 0.62),
+        0 12px 18px rgba(0, 48, 80, 0.48);
+}
+
+.wave-ring {
+    position: absolute;
+    width: clamp(105px, 14vw, 165px);
+    height: clamp(105px, 14vw, 165px);
+    aspect-ratio: 1;
+    border: 14px solid #74f5ff;
+    border-radius: 50%;
+    background-color: rgba(34, 203, 235, 0.14);
+    box-shadow:
+        0 0 16px white,
+        0 0 35px #26dff5,
+        inset 0 0 20px white;
+    animation: ringPulse 850ms ease-in-out infinite alternate;
+}

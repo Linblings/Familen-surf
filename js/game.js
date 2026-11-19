@@ -333,7 +333,7 @@ function startSurfing() {
 
         spawnTimer = setInterval(
             createRandomObject,
-            1450
+            2500
         );
 
         lastFrameTime =
@@ -855,16 +855,22 @@ function createRandomObject() {
         return;
     }
 
-    const randomNumber =
-        Math.random();
-
+    const randomNumber = Math.random();
     let type;
 
-    if (randomNumber < 0.38) {
+    /*
+    Vennlig startbalanse:
+    35 % solmynter
+    20 % bølgeringer
+    25 % skumbølger
+    20 % steiner
+    */
+
+    if (randomNumber < 0.35) {
         type = "coin";
-    } else if (randomNumber < 0.60) {
+    } else if (randomNumber < 0.55) {
         type = "ring";
-    } else if (randomNumber < 0.82) {
+    } else if (randomNumber < 0.80) {
         type = "wave";
     } else {
         type = "rock";
@@ -873,111 +879,73 @@ function createRandomObject() {
     createGameObject(type);
 }
 
-
 function createGameObject(type) {
-    const element =
-        document.createElement("div");
+    const element = document.createElement("div");
 
-    element.classList.add(
-        "game-object"
-    );
+    element.classList.add("game-object");
 
     if (type === "coin") {
-        element.classList.add(
-            "sun-coin"
-        );
-    }
-
-    if (type === "ring") {
-        element.classList.add(
-            "wave-ring"
-        );
-    }
-
-    if (type === "wave") {
-        element.classList.add(
-            "foam-wave"
-        );
-    }
-
-    if (type === "rock") {
-        element.classList.add(
-            "rock"
-        );
+        element.classList.add("sun-coin");
+    } else if (type === "ring") {
+        element.classList.add("wave-ring");
+    } else if (type === "wave") {
+        element.classList.add("foam-wave");
+    } else {
+        element.classList.add("rock");
     }
 
     objectLayer.appendChild(element);
 
+    const objectWidth = element.offsetWidth;
+    const objectHeight = element.offsetHeight;
 
-    const objectWidth =
-        element.offsetWidth;
+    /* Tilfeldig høyde i nesten hele spillområdet. */
+    const topMargin = 20;
+    const bottomMargin = 25;
 
-    const objectHeight =
-        element.offsetHeight;
+    const availableHeight = Math.max(
+        1,
+        waveArea.clientHeight
+        - objectHeight
+        - topMargin
+        - bottomMargin
+    );
 
-    const maximumY =
-        Math.max(
-            10,
-            waveArea.clientHeight
-            - objectHeight
-            - 15
-        );
+    const y =
+        topMargin
+        + Math.random() * availableHeight;
 
-    let y =
-        15 + Math.random()
-        * (maximumY - 15);
+    /* Objektet starter utenfor venstre kant. */
+    const x = -objectWidth - 50;
 
+    /* Rolig start, gradvis litt raskere. */
+    let speed = Math.min(
+        285,
+        95
+        + gameTime * 1.25
+        + score * 0.07
+    );
 
-    /*
-    Hindringer plasseres gjerne
-    nærmere vannoverflaten.
-    */
-
-    if (
-        type === "wave"
-        || type === "rock"
-    ) {
-        y =
-            waveArea.clientHeight
-            - objectHeight
-            - 18;
+    /* Bonusobjekter får mer tid til å samles. */
+    if (type === "coin" || type === "ring") {
+        speed *= 0.72;
     }
-
-
-    const speed =
-        Math.min(
-            520,
-            230
-            + gameTime * 4
-            + score * 0.45
-        );
-
 
     const gameObject = {
         element: element,
-
         type: type,
-
-        x:
-            waveArea.clientWidth
-            + 120,
-
+        x: x,
         y: y,
-
         width: objectWidth,
         height: objectHeight,
-
         speed: speed,
-
         collected: false,
         passed: false
     };
 
     gameObjects.push(gameObject);
-
     drawGameObject(gameObject);
 }
-
 
 /*
 ========================================
@@ -986,25 +954,25 @@ FLYTT SPILLOBJEKTER
 */
 
 function updateObjects(deltaTime) {
-    gameObjects.forEach(
-        function (gameObject) {
-            gameObject.x -=
-                gameObject.speed
-                * deltaTime;
+    gameObjects.forEach(function (gameObject) {
+        gameObject.x +=
+            gameObject.speed * deltaTime;
 
-            drawGameObject(gameObject);
-        }
-    );
+        drawGameObject(gameObject);
+    });
 }
 
-
 function drawGameObject(gameObject) {
-    gameObject.element.style.transform =
-        "translate(" +
-        gameObject.x +
-        "px, " +
-        gameObject.y +
-        "px)";
+    /*
+    left og top styrer plasseringen.
+    Da kan CSS animere sol og ring uten
+    å overskrive objektets posisjon.
+    */
+    gameObject.element.style.left =
+        gameObject.x + "px";
+
+    gameObject.element.style.top =
+        gameObject.y + "px";
 }
 
 
@@ -1252,46 +1220,32 @@ FJERN GAMLE OBJEKTER
 */
 
 function removeOldObjects() {
-    gameObjects =
-        gameObjects.filter(
-            function (gameObject) {
+    gameObjects = gameObjects.filter(function (gameObject) {
+        if (gameObject.collected) {
+            return false;
+        }
 
-                if (gameObject.collected) {
-                    return false;
-                }
+        /* Objektet har passert høyre kant. */
+        if (
+            gameObject.x
+            > waveArea.clientWidth + 150
+        ) {
+            gameObject.element.remove();
 
-                if (
-                    gameObject.x
-                    + gameObject.width
-                    < -150
-                ) {
-                    gameObject.element.remove();
-
-                    /*
-                    Hindringer som passeres
-                    uten treff gir litt poeng.
-                    */
-
-                    if (
-                        gameObject.type
-                        === "wave"
-
-                        ||
-
-                        gameObject.type
-                        === "rock"
-                    ) {
-                        score += 5;
-
-                        updateInterface();
-                    }
-
-                    return false;
-                }
-
-                return true;
+            /* Unngått hindring gir fem poeng. */
+            if (
+                gameObject.type === "wave"
+                || gameObject.type === "rock"
+            ) {
+                score += 5;
+                updateInterface();
             }
-        );
+
+            return false;
+        }
+
+        return true;
+    });
 }
 
 
